@@ -61,9 +61,25 @@ namespace MetodKvaina
 
             for(int i=0;i<(int)Math.Pow(2,names.Count);++i)
             {
-                List<string> combination = new List<string>(names.Count);
+                List<string> combination = new List<string>(namesCopy.Count);
+
+                for (int j=0;j<namesCopy.Count;++j)
+                {
+                    combination.Add(WhatsName(namesCopy[j], namesCopy.Count-1-j, i));
+                }
+
+                allCombinations.Add(combination);
             }
             return allCombinations;
+        }
+        public static string WhatsName(string name,int currentposName,int globalPos)
+        {
+            int cycle = (int)Math.Pow(2, currentposName);
+            if((globalPos/cycle) % 2==0)
+            {
+                name = '!' + name;
+            }
+            return name;
         }
     }
 }
