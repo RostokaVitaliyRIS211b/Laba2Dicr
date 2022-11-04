@@ -32,12 +32,13 @@ namespace MetodKvaina
             for(int i=0;i<expression.Length;++i)
             {
                 name.Append(expression[i]);
-                if(!Regex.IsMatch(name.ToString(), @"[\w]+"))
+                if(Regex.IsMatch(name.ToString(), @"[\W_,.;:.!?-]"))
                 {
-                    if(name.Length>1 && !Regex.IsMatch(name.ToString(),@"[\d]+"))
+                    if(name.Length>1)
                     {
                         name.Remove(name.Length-1, 1);
-                        names.Add(name.ToString());
+                        if(!Regex.IsMatch(name.ToString(), @"^\d+$"))
+                            names.Add(name.ToString());
                     }
                     name.Clear();
                 }

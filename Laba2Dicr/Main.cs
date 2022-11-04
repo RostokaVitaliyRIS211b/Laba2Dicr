@@ -14,7 +14,6 @@ Textbox res = new Textbox(ref active);
 res.set_string("");
 
 Clock clock = new Clock();
-List<string> names = SLE.GetNamesFromExpression("x1 * x2 * x3 * x4");
 MainWindow.MouseButtonPressed += MouseButtonPressed;
 MainWindow.MouseButtonReleased += MouseButtonReleased;
 MainWindow.MouseMoved += MouseMoved;
