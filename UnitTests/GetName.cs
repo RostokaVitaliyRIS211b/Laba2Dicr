@@ -14,6 +14,7 @@ namespace UnitTests
             list.Add("x3");
             list.Add("x4");
             List<string> names = SLE.GetNamesFromExpression(exp);
+            Assert.AreEqual(4, names.Count);
             for(int i = 0; i < names.Count; ++i)
             {
                 Assert.AreEqual(list[i], names[i]);
@@ -29,6 +30,7 @@ namespace UnitTests
             list.Add("x3");
             list.Add("x12");
             List<string> names = SLE.GetNamesFromExpression(exp);
+            Assert.AreEqual(4, names.Count);
             for (int i = 0; i < names.Count; ++i)
             {
                 Assert.AreEqual(list[i], names[i]);
@@ -43,6 +45,7 @@ namespace UnitTests
             list.Add("x3");
             list.Add("x12");
             List<string> names = SLE.GetNamesFromExpression(exp);
+            Assert.AreEqual(3, names.Count);
             for (int i = 0; i < names.Count; ++i)
             {
                 Assert.AreEqual(list[i], names[i]);

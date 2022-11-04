@@ -23,6 +23,8 @@ namespace MetodKvaina
         public static List<string> GetSimplifiedForm(string expression,List<string> disjuncts)
         {
             List<string> sokrExpression = new List<string>();
+            List<List<string>> allCombinationsOfNames = new List<List<string>>();
+
             return sokrExpression;
         }
         public static List<string> GetNamesFromExpression(string expression)
@@ -43,7 +45,21 @@ namespace MetodKvaina
                     name.Clear();
                 }
             }
+            if (!Regex.IsMatch(name.ToString(), @"[\W_,.;:.!?-]"))
+            {
+                if (name.Length>1)
+                {
+                    if (!Regex.IsMatch(name.ToString(), @"^\d+$"))
+                        names.Add(name.ToString());
+                }
+                name.Clear();
+            }
             return names;
+        }
+        public static List<List<string>> GetAllCombinations(List<string> names)
+        {
+            List<List<string>> allCombinations = new List<List<string>>();
+            return allCombinations;
         }
     }
 }
