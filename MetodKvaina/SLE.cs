@@ -31,34 +31,38 @@ namespace MetodKvaina
         {
             List<string> names = new List<string>();
             StringBuilder name = new StringBuilder();
+            expression += ' ';
             for(int i=0;i<expression.Length;++i)
             {
                 name.Append(expression[i]);
-                if(Regex.IsMatch(name.ToString(), @"[\W_,.;:.!?-]"))
+                if(Regex.IsMatch(name.ToString(), @"[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Lm}!]"))
                 {
-                    if(name.Length>1)
+                    if (name.Length>1)
                     {
                         name.Remove(name.Length-1, 1);
-                        if(!Regex.IsMatch(name.ToString(), @"^\d+$"))
+                        if (!Regex.IsMatch(name.ToString(), @"^\d+$"))
                             names.Add(name.ToString());
                     }
                     name.Clear();
                 }
             }
-            if (!Regex.IsMatch(name.ToString(), @"[\W_,.;:.!?-]"))
-            {
-                if (name.Length>1)
-                {
-                    if (!Regex.IsMatch(name.ToString(), @"^\d+$"))
-                        names.Add(name.ToString());
-                }
-                name.Clear();
-            }
+            expression = expression.Remove(expression.Length-1, 1);
             return names;
         }
         public static List<List<string>> GetAllCombinations(List<string> names)
         {
-            List<List<string>> allCombinations = new List<List<string>>();
+            List<List<string>> allCombinations = new List<List<string>>((int)Math.Pow(2, names.Count));
+            List<string> namesCopy = new List<string>(names);
+            for(int i=0;i<names.Count;++i)
+            {
+                if (namesCopy[i].Contains('!'))
+                    namesCopy[i]=namesCopy[i].Remove(0, 1);
+            }
+
+            for(int i=0;i<(int)Math.Pow(2,names.Count);++i)
+            {
+                List<string> combination = new List<string>(names.Count);
+            }
             return allCombinations;
         }
     }
