@@ -22,11 +22,14 @@ namespace MetodKvaina
             return builder.ToString();
         }
     }
-    public static class SLE
+
+    public static class SLE// !x2 - good x2! - bad x!2 - bad
     {
         public static string GetMinimumForm(string SDNF)
         {
             string minForm = SDNF;
+            List<string> implicants = GetSimplifiedForm(GetDisjuncts(SDNF));
+
             return minForm;
         }
         public static string GetSDNF(string logicalExpression)
@@ -39,13 +42,12 @@ namespace MetodKvaina
             List<string> disjuncts = Expression.Split('+').ToList();
             return disjuncts;
         }
-        public static List<string> GetSimplifiedForm(string expression,List<string> disjuncts)
+        public static List<string> GetSimplifiedForm(List<string> disjuncts)
         {
-            List<string> sokrExpression = new List<string>();
-            List<List<string>> sochetan;
-            OperationOfGluing(out sochetan, ref disjuncts);
-
-            return sokrExpression;
+            List<List<string>> implicants;
+            OperationOfGluing(out implicants, disjuncts);
+            implicants = UniqueSoches(implicants);
+            return GetImplicants(in implicants);
         }
         public static List<string> GetNamesFromExpression(string expression)
         {
@@ -140,9 +142,9 @@ namespace MetodKvaina
             }
             return nSoch;
         }
-        public static void OperationOfGluing(out List<List<string>> sochetania, ref List<string> disjuncts)
+        public static void OperationOfGluing(out List<List<string>> implicants, List<string> disjuncts)
         {
-            sochetania = new List<List<string>>();
+            implicants = new List<List<string>>();
 
             for(int i=0;i<disjuncts.Count-1;++i)
             {
@@ -151,13 +153,11 @@ namespace MetodKvaina
                 List<Glued> sochl = GLuedSoch(names, sochet);
                 int whatsoch = -1;
 
-                for (int j=i+1;j<disjuncts.Count && whatsoch ==-1;++j)
+                for (int j=i+1;j<disjuncts.Count;++j)
                 {
                     if (CanIGluedThey(disjuncts[j],sochl,out whatsoch))
                     {
-                        disjuncts[i] = sochl[whatsoch].ToExp();
-                        sochetania.Add(sochl[whatsoch].soch);
-                        disjuncts.Remove(disjuncts[j]);
+                        implicants.Add(sochl[whatsoch].soch);
                     }
                 }
             }
@@ -199,6 +199,102 @@ namespace MetodKvaina
                 Fullexp.Append(exp);
             }
             return Fullexp.ToString();
+        }
+        public static List<List<string>> UniqueSoches(List<List<string>> soches)
+        {
+            List<List<string>> uniqueSoches = new List<List<string>>();
+
+            foreach(List<string>  list in soches)
+            {
+                bool isUnique = true;
+                for(int i=0;i<uniqueSoches.Count && isUnique;++i)
+                {
+                    bool isUniqueElem = false;
+                    for(int j=0;j<uniqueSoches[i].Count && !isUniqueElem;++j)
+                    {
+                        if (!uniqueSoches[i].Contains(list[j]))
+                            isUniqueElem = true;
+                    }
+                    isUnique = isUniqueElem;
+                }
+
+                if(isUnique)
+                    uniqueSoches.Add(list);
+            }
+            return uniqueSoches;
+        }
+        public static List<string> UniqueDisjuncts(List<string> disjuncts)
+        {
+            List<string> unDisjuncts = new List<string>();
+            for(int i=0;i<disjuncts.Count;++i)
+            {
+                bool isUnique = true;
+                for(int j=0;j<unDisjuncts.Count && isUnique;++j)
+                {
+                    bool isUniqueElem = false;
+                    List<string> names1 = GetNamesFromExpression(unDisjuncts[j]);
+                    List<string> names2 = GetNamesFromExpression(disjuncts[i]);
+                    if(names1.Count==names2.Count)
+                    {
+                        for (int g = 0; g<names2.Count; ++g)
+                        {
+                            if (!names1.Contains(names2[g]))
+                                isUniqueElem = true;
+                        }
+                    }
+                    else
+                    {
+                        isUniqueElem = true;
+                    }
+                   
+                    isUnique = isUniqueElem;
+                }
+
+                if (isUnique)
+                    unDisjuncts.Add(disjuncts[i]);
+            }
+            return unDisjuncts;
+        }
+        public static void OperationOfMerge(in List<List<string>> soches,ref List<string> disjuncts)
+        {
+            for(int i = 0;i<disjuncts.Count;++i)
+            {
+                int countOfNames = GetNamesFromExpression(disjuncts[i]).Count;
+                bool isRemoved = false;
+                for (int j=0;j<soches.Count && countOfNames>soches[j].Count && !isRemoved; ++j)
+                {
+                    string regExp = GetSh1RegularExp(soches[j]);
+
+                    if (Regex.IsMatch(disjuncts[i],regExp) )
+                    {
+                        disjuncts.Remove(disjuncts[i]);
+                        isRemoved = true;
+                        --i;
+                    }
+                }
+            }
+        }
+        public static List<string> GetImplicants(in List<List<string>> implicants)
+        {
+            List<string> imp = new List<string>();
+            foreach (var implicant in implicants)
+            {   
+                StringBuilder impl = new StringBuilder($"{implicant[0]} ");
+
+                for(int i=1;i<implicant.Count;++i)
+                {
+                    impl.Append($"* {implicant[i]} ");
+                }
+
+                imp.Add(impl.ToString());
+            }
+            return imp;
+        }
+        public static List<string> GetMinImp(string SDNF,List<string> sokrImplicants)
+        {
+            List<string> minimum = new List<string>();
+
+            return minimum;
         }
     }
 }
