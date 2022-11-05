@@ -13,6 +13,21 @@ Textbox active = textboxes[1];
 Textbox res = new Textbox(ref active);
 res.set_string("");
 
+string exp = "x1 *x2 *x3 + !x1 * x2 * x3 + !x3 * x1 * !x2 + x1 * !x2 * x3";
+
+List<List<string>> sohes;
+List<List<string>> sohesExp = new List<List<string>>();
+
+sohesExp.Add(new List<string>(new string[] { "x2", "x3" }));
+sohesExp.Add(new List<string>(new string[] { "x1", "!x2" }));
+
+List<string> disjuncts = SLE.GetDisjuncts(exp);
+List<string> disjunctsExp = new List<string>();
+
+disjunctsExp.Add("x2 * x3 ");
+disjunctsExp.Add("x1 * !x2 ");
+SLE.OperationOfGluing(out sohes, ref disjuncts);
+
 Clock clock = new Clock();
 MainWindow.MouseButtonPressed += MouseButtonPressed;
 MainWindow.MouseButtonReleased += MouseButtonReleased;
