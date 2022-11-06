@@ -22,15 +22,87 @@ namespace MetodKvaina
             return builder.ToString();
         }
     }
+    public struct Coverage
+    {
+        public static int countOfDisjuncts;
+        public List<string> implicants;
+        public List<int> coveregDisjuncts;
+        public Coverage()
+        {
+            implicants = new List<string>();
+            coveregDisjuncts = new List<int>();
+        }
+        static Coverage()
+        {
+            countOfDisjuncts = 0;
+        }
+        public bool isCover()
+        {
+            bool isCov = true;
+            for(int i=0;i<countOfDisjuncts && isCov;++i)
+            {
+                if (!coveregDisjuncts.Contains(i))
+                    isCov = false;
+            }
+            return isCov;
+        }
+    }
+    public class Coveric
+    {
+        public string implicant;
+        public List<int> covered;
+        public Coveric()
+        {
+            implicant = "";
+            covered = new List<int>();
+        }
+    }
 
     public static class SLE// !x2 - good x2! - bad x!2 - bad
     {
         public static string GetMinimumForm(string SDNF)
         {
-            string minForm = SDNF;
-            List<string> implicants = GetSimplifiedForm(GetDisjuncts(SDNF));
 
-            return minForm;
+            List<string> disjuncts = GetDisjuncts(SDNF);
+
+            List<string> implicants = GetSimplifiedForm(disjuncts);
+
+            Coverage.countOfDisjuncts = disjuncts.Count;
+
+            Coverage minCov = new Coverage();
+
+            int countOfCover = implicants.Count;
+
+            bool isCovered = true;
+
+            while(isCovered && countOfCover>1)
+            {
+                --countOfCover;
+                isCovered = false;
+
+                List<Coverage> coverages = GetCoverage(disjuncts, implicants, countOfCover);
+
+                for(int i=0;i<coverages.Count && !isCovered;++i)
+                {
+                    if (coverages[i].isCover())
+                    {
+                        isCovered = true;
+                        minCov = coverages[i];
+                    }
+                }
+                
+            }
+
+            StringBuilder minform = new StringBuilder("");
+
+            foreach(string imp in minCov.implicants)
+            {
+                minform.Append($" {imp}+");
+            }
+
+            minform = minform.Remove(minform.Length-1, 1);
+
+            return minform.ToString();
         }
         public static string GetSDNF(string logicalExpression)
         {
@@ -71,12 +143,12 @@ namespace MetodKvaina
             expression = expression.Remove(expression.Length-1, 1);
             return names;
         }
-        public static List<List<string>> GetAllSoch(List<string> names)
+        public static List<List<T>> GetAllSoch<T>(List<T> names)
         {
-            List<List<string>> sochetania = new List<List<string>>();
+            List<List<T>> sochetania = new List<List<T>>();
             for(int i=names.Count-1;i>=0;--i)
             {
-                List<string> sochetanie = new List<string>();
+                List<T> sochetanie = new List<T>();
                 for(int j=0;j<names.Count;++j)
                 {
                     if (j!=i)
@@ -200,11 +272,11 @@ namespace MetodKvaina
             }
             return Fullexp.ToString();
         }
-        public static List<List<string>> UniqueSoches(List<List<string>> soches)
+        public static List<List<T>> UniqueSoches<T>(List<List<T>> soches)
         {
-            List<List<string>> uniqueSoches = new List<List<string>>();
+            List<List<T>> uniqueSoches = new List<List<T>>();
 
-            foreach(List<string>  list in soches)
+            foreach(List<T>  list in soches)
             {
                 bool isUnique = true;
                 for(int i=0;i<uniqueSoches.Count && isUnique;++i)
@@ -289,6 +361,63 @@ namespace MetodKvaina
                 imp.Add(impl.ToString());
             }
             return imp;
+        }
+        public static List<Coverage> GetCoverage(in List<string> disjuncts, in List<string> implis,int countOfCover)
+        {
+            List<Coverage> coverages = new List<Coverage>();
+
+            List<Coveric> coverics = new List<Coveric>();
+
+            foreach(var impl in implis)
+            {
+                Coveric coveric = new Coveric();
+
+                coveric.implicant = impl;
+
+                for(int i=0;i<disjuncts.Count;++i)
+                {
+                    string RegExp = GetSh1RegularExp(GetNamesFromExpression(impl));
+                    if (Regex.IsMatch(disjuncts[i],RegExp))
+                    {
+                        coveric.covered.Add(i);
+                    }
+                }
+                coverics.Add(coveric);
+            }
+
+            List<List<Coveric>> sochCov = GetAllSoch(coverics);
+
+            for(int i=1;i<implis.Count - countOfCover;++i)
+            {
+                List<List<Coveric>> newSochCov = new List<List<Coveric>>();
+
+                for(int j=0;j<sochCov.Count;++j)
+                {
+                    List<List<Coveric>> hohoho = GetAllSoch(sochCov[j]);
+
+                    foreach(List<Coveric> elem in hohoho)
+                    {
+                        newSochCov.Add(elem);
+                    }
+                }
+
+                newSochCov = UniqueSoches(newSochCov);
+
+                sochCov = newSochCov;
+            }
+
+            foreach(List<Coveric> coverics1 in sochCov)
+            {
+                Coverage coverage = new Coverage();
+                foreach(Coveric coveric2 in coverics1)
+                {
+                    coverage.implicants.Add(coveric2.implicant);
+                    coverage.coveregDisjuncts.AddRange(coveric2.covered);
+                }
+                coverages.Add(coverage);
+            }
+           
+            return coverages;
         }
         public static List<string> GetMinImp(string SDNF,List<string> sokrImplicants)
         {

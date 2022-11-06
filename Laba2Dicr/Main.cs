@@ -13,17 +13,6 @@ Textbox active = textboxes[1];
 Textbox res = new Textbox(ref active);
 res.set_string("");
 
-string expression = " x1 * x2  + !x2 * x3  + x1 * !x2 * x3 + x1 * x2 * !x3 + x1 * x2  + !x2 * x3";
-List<string> disjuncts = SLE.GetDisjuncts(expression);
-List<string> disjunctsExp = new List<string>();
-
-disjunctsExp.Add(" x1 * x2  ");
-disjunctsExp.Add(" !x2 * x3  ");
-disjunctsExp.Add(" x1 * !x2 * x3 ");
-disjunctsExp.Add(" x1 * x2 * !x3 ");
-
-disjuncts = SLE.UniqueDisjuncts(disjuncts);
-
 Clock clock = new Clock();
 MainWindow.MouseButtonPressed += MouseButtonPressed;
 MainWindow.MouseButtonReleased += MouseButtonReleased;
