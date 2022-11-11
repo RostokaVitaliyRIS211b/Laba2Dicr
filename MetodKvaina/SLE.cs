@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Text;
+using System.Diagnostics;
 
 namespace MetodKvaina
 {
@@ -419,11 +420,14 @@ namespace MetodKvaina
            
             return coverages;
         }
-        public static List<string> GetMinImp(string SDNF,List<string> sokrImplicants)
+        public static string GetTime(string SDNF)
         {
-            List<string> minimum = new List<string>();
-
-            return minimum;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            GetMinimumForm(SDNF);
+            stopwatch.Stop();
+            string time = stopwatch.Elapsed.TotalMilliseconds.ToString();
+            return time;
         }
     }
 }

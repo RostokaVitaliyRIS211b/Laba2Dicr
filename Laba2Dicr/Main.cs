@@ -12,7 +12,8 @@ Textbox active = textboxes[1];
 
 Textbox res = new Textbox(ref active);
 res.set_string("");
-
+res.set_size_rect(400, 100);
+res.set_pos(202, 52);
 Clock clock = new Clock();
 MainWindow.MouseButtonPressed += MouseButtonPressed;
 MainWindow.MouseButtonReleased += MouseButtonReleased;
@@ -26,6 +27,7 @@ while (MainWindow.IsOpen)
     MainWindow.Clear(Color.White);
     MainWindow.DispatchEvents();
     DrawTextbox(MainWindow, textboxes,clock);
+    MainWindow.Draw(res);
     MainWindow.Display();
 }
 
@@ -43,17 +45,22 @@ void MouseMoved(object? sender, MouseMoveEventArgs e)
 }
 void KeyPressed(object? sender, KeyEventArgs e)
 {
-    if (e.Code!=Keyboard.Key.Enter)
+    if (e.Code!=Keyboard.Key.Enter && e.Code != Keyboard.Key.BackSpace)
     {
         char ee = WhatCharItIs(e.Code);
         if (ee!='`')
             active.set_string(active.get_string()+ee);
         return;
     }
-    else
+    else if(e.Code==Keyboard.Key.Enter)
     {
         res.set_string(SLE.GetMinimumForm(active.get_string()));
     }
+    else if(e.Code == Keyboard.Key.BackSpace)
+    {
+        active.set_string(active.get_string().Remove(active.get_string().Length-1,1));
+    }
+
 }
 void MouseWheelScrolled(object? sender, MouseWheelScrollEventArgs e)
 {
@@ -93,7 +100,7 @@ void InitTextboxes(List<Textbox> textboxes)
     textbox.set_outline_color_rect(Color.Black);
     textbox.set_outline_thickness_rect(2);
     textbox.set_size_character_text(16);
-    textbox.set_size_rect(400, 100);
+    textbox.set_size_rect(800, 100);
     textbox.set_pos(640, 260);
     textboxes.Add(textbox);
     textbox = new Textbox(ref textbox);
@@ -114,11 +121,13 @@ char WhatCharItIs(Keyboard.Key code)
         ch= ' ';
     else if ((int)code==56 || (int)code==68)
         ch='-';
-    else if (Keyboard.IsKeyPressed(Keyboard.Key.LShift) && code==Keyboard.Key.Num8)
-        ch='*';
     else if (Keyboard.IsKeyPressed(Keyboard.Key.LShift) && code == Keyboard.Key.Equal)
         ch='+';
     else
         ch='`';
+    if (Keyboard.IsKeyPressed(Keyboard.Key.LShift) && code==Keyboard.Key.Num8)
+        ch='*';
+    if (Keyboard.IsKeyPressed(Keyboard.Key.LShift) && code==Keyboard.Key.Num1)
+        ch='!';
     return ch;
 }
