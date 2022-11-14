@@ -135,7 +135,7 @@ namespace MetodKvaina
                     if (name.Length>1)
                     {
                         name.Remove(name.Length-1, 1);
-                        if (!Regex.IsMatch(name.ToString(), @"^\d+$"))
+                        if (!Regex.IsMatch(name.ToString(), @"^\d+$") && !names.Contains(name.ToString()))
                             names.Add(name.ToString());
                     }
                     name.Clear();

@@ -15,6 +15,7 @@ res.set_string("");
 res.set_size_rect(400, 100);
 res.set_pos(202, 52);
 Clock clock = new Clock();
+//SLE.GetTime(" x * y * z +  x * y * !z +  x * !y * !z + !x * !y * !z +  !x * y * z +  !x * !y * z ");
 MainWindow.MouseButtonPressed += MouseButtonPressed;
 MainWindow.MouseButtonReleased += MouseButtonReleased;
 MainWindow.MouseMoved += MouseMoved;
