@@ -154,11 +154,11 @@ namespace MetodKvaina
             bool x=false, y=false;
             Operations operation = Operations.or;
 
-            if(smallExp.Contains('*'))
+            if(Regex.IsMatch(smallExp,"[^!][*]"))
             {
                 operation = Operations.and;
             }
-            else if(smallExp.Contains('+'))
+            else if(Regex.IsMatch(smallExp, "[^!][+]"))
             {
                 operation = Operations.or;
             }
