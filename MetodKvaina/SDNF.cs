@@ -99,9 +99,11 @@ namespace MetodKvaina
 
             ReplaceToInt(ref expression, bools, names);
 
-            while(expCopy.ToString().Contains('('))
+            MatchEvaluator matchEvaluator = x => ResultExp(x.ToString()).ToString();
+
+            while (expression.ToString().Contains('('))
             {
-                regExpSh1.Replace(expression,ResultExp(regExpSh1.Match(expression).ToString()).ToString());
+                expression = regExpSh1.Replace(expression,matchEvaluator);
             }
 
             return ResultExp(expression)==1 ? true : false;
@@ -122,7 +124,7 @@ namespace MetodKvaina
 
             while (regExpSh6.IsMatch(medExp))
             {
-                medExp = regExpSh7.Replace(medExp, matchEvaluator2);
+                medExp = regExpSh6.Replace(medExp, matchEvaluator2);
             }
             while (regExpSh7.IsMatch(medExp))
             {
@@ -232,7 +234,7 @@ namespace MetodKvaina
                 }
                 else if (match[i]=='+')
                 {
-                    stringBuilder.Append('+');
+                    stringBuilder.Append('*');
                 }
                 else if (match[i]!='!')
                 {
@@ -246,7 +248,7 @@ namespace MetodKvaina
             for (int i = 0; i<names.Count; ++i)
             {
                 expression = Regex.Replace(expression, $"[!]({names[i]})", $"{(bools[i]==1 ? 0 : 1)}");
-                expression = Regex.Replace(expression, $@"[^!\s]*({names[i]})", $"{bools[i]}");
+                expression = Regex.Replace(expression, $@"[^!\s()]*({names[i]})", $"{bools[i]}");
             }
         }
         public static string GetSDNF(string expression)
