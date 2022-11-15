@@ -210,17 +210,8 @@ namespace MetodKvaina
         {
             for (int i = 0; i<names.Count; ++i)
             {
-                while (Regex.IsMatch(expression, $"[!]*{names[i]}"))
-                {
-                    if (Regex.Match(expression, $"[!]*{names[i]}").ToString().Contains('!'))
-                    {
-                        expression = Regex.Replace(expression, $"[!]*{names[i]}", $"{(bools[i]==1 ? 0 : 1)}");
-                    }
-                    else
-                    {
-                        expression = Regex.Replace(expression, $"[!]*{names[i]}", $"{bools[i]}");
-                    }
-                }
+                expression = Regex.Replace(expression, $"[!]({names[i]})", $"{(bools[i]==1 ? 0 : 1)}");
+                expression = Regex.Replace(expression, $@"[^!\s]*({names[i]})", $"{bools[i]}");
             }
         }
         public static string GetSDNF(string expression)
