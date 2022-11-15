@@ -117,35 +117,42 @@ namespace MetodKvaina
             Regex regExpSh6 = new Regex(@"[01]{1}[\s]*(![*]){1}[\s]*[01]{1}");
             Regex regExpSh7 = new Regex(@"[01]{1}[\s]*(![+]){1}[\s]*[01]{1}");
 
-            while(regExpSh1.IsMatch(medExp))
-            {
-                regExpSh1.Replace(medExp, ResultOperation(regExpSh1.Match(medExp).ToString()).ToString());
-            }
-            while (regExpSh2.IsMatch(medExp))
-            {
-                regExpSh2.Replace(medExp, ResultOperation(regExpSh1.Match(medExp).ToString()).ToString());
-            }
-            while (regExpSh3.IsMatch(medExp))
-            {
-                regExpSh3.Replace(medExp, ResultOperation(regExpSh1.Match(medExp).ToString()).ToString());
-            }
-            while (regExpSh4.IsMatch(medExp))
-            {
-                regExpSh4.Replace(medExp, ResultOperation(regExpSh1.Match(medExp).ToString()).ToString());
-            }
-            while (regExpSh5.IsMatch(medExp))
-            {
-                regExpSh5.Replace(medExp, ResultOperation(regExpSh1.Match(medExp).ToString()).ToString());
-            }
+            MatchEvaluator matchEvaluator = x => ResultOperation(x.ToString()).ToString();
+            MatchEvaluator matchEvaluator2 = x => RasBraces(x.ToString());
+
             while (regExpSh6.IsMatch(medExp))
             {
-                regExpSh6.Replace(medExp, ResultOperation(regExpSh1.Match(medExp).ToString()).ToString());
+                medExp = regExpSh7.Replace(medExp, matchEvaluator2);
             }
             while (regExpSh7.IsMatch(medExp))
             {
-                regExpSh7.Replace(medExp, ResultOperation(regExpSh1.Match(medExp).ToString()).ToString());
+                medExp = regExpSh7.Replace(medExp, matchEvaluator2);
             }
-
+            while (regExpSh1.IsMatch(medExp))
+            {
+                medExp = regExpSh1.Replace(medExp, matchEvaluator);
+            }
+            while (regExpSh2.IsMatch(medExp))
+            {
+                medExp = regExpSh2.Replace(medExp, matchEvaluator);
+            }
+            while (regExpSh3.IsMatch(medExp))
+            {
+                medExp = regExpSh3.Replace(medExp, matchEvaluator);
+            }
+            while (regExpSh4.IsMatch(medExp))
+            {
+                medExp = regExpSh4.Replace(medExp, matchEvaluator);
+            }
+            while (regExpSh5.IsMatch(medExp))
+            {
+                medExp = regExpSh5.Replace(medExp, matchEvaluator);
+            }
+           
+            if (medExp.Contains('1'))
+                res = 1;
+            else
+                res = 0;
             return res;
         }
         public static int ResultOperation(string smallExp)
@@ -205,6 +212,34 @@ namespace MetodKvaina
             }
             res = Operation(x, y, operation)?1:0;
             return res;
+        }
+        public static string RasBraces(string match)
+        {
+            StringBuilder stringBuilder = new StringBuilder("");
+            for(int i=0;i<match.Length;++i)
+            {
+                if (match[i]=='0')
+                {
+                    stringBuilder.Append('1');
+                }
+                else if (match[i]=='1')
+                {
+                    stringBuilder.Append('0');
+                }
+                else if (match[i]=='*')
+                {
+                    stringBuilder.Append('+');
+                }
+                else if (match[i]=='+')
+                {
+                    stringBuilder.Append('+');
+                }
+                else if (match[i]!='!')
+                {
+                    stringBuilder.Append(match[i]);
+                }
+            }
+            return stringBuilder.ToString();
         }
         public static void ReplaceToInt(ref string expression, List<int> bools, List<string> names)
         {
