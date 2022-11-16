@@ -9,7 +9,7 @@ namespace UnitTestsSDNF
         {
             List<string> list2 = new List<string>(new string[] { "x", "y", "z" });
             string expression = "( (x * y) -> !z ) * ( (!y -> z) + ( (x !* z -> !x) == y) )";
-            List<List<string>> allcombs = SLE.GetAllCombinations(list2);
+            List<List<string>> allcombs = SLE.GetAllCombinations(list2);    
             List<List<string>> expectedCombs = new List<List<string>>();
             expectedCombs.Add(new List<string>(new string[] {"!x","!y","z"}));
             expectedCombs.Add(new List<string>(new string[] { "!x", "y", "!z" }));

@@ -249,11 +249,22 @@ namespace MetodKvaina
         }
         public static string GetSDNF(string expression)
         {
-            string sdnf = "";
+            StringBuilder sdnf = new StringBuilder("");
             List<string> names = GetNamesSDNF(expression);
-            List<List<string>> allcomb = SLE.GetAllCombinations(names);
-            List<List<string>> sdnfCombs = GetCombs(names, allcomb, expression);
-            return sdnf;
+            List<List<string>> allComb = SLE.GetAllCombinations(names);
+            List<List<string>> sdnfCombs = GetCombs(names, allComb, expression);
+            for(int i=0;i<sdnfCombs.Count;++i)
+            {
+                if(i>0)
+                    sdnf.Append(" + ");
+                sdnf.Append(sdnfCombs[i][0]);
+                for(int j = 1; j<sdnfCombs[i].Count; ++j)
+                {
+                    sdnf.Append(" * "+sdnfCombs[i][j]);
+                }
+                
+            }
+            return sdnf.ToString();
         }
         public static void CleanNames(List<string> names)
         {

@@ -1,6 +1,6 @@
 ﻿using MetodKvaina;
 using Text;
-
+using System.Diagnostics;
 
 RenderWindow MainWindow = new(new VideoMode(1280, 720), "Metod Kvaina");
 
@@ -15,7 +15,13 @@ res.set_string("");
 res.set_size_rect(400, 100);
 res.set_pos(202, 52);
 Clock clock = new Clock();
+
 //SLE.GetTime(" x * y * z +  x * y * !z +  x * !y * !z + !x * !y * !z +  !x * y * z +  !x * !y * z ");
+//Stopwatch stopwatch = new Stopwatch();
+//stopwatch.Start();
+//SDNF.GetSDNF("( (x * y) -> !z ) * ( (!y -> z) + ( (x !* z -> !x) == y) )");
+//stopwatch.Stop();
+
 MainWindow.MouseButtonPressed += MouseButtonPressed;
 MainWindow.MouseButtonReleased += MouseButtonReleased;
 MainWindow.MouseMoved += MouseMoved;
@@ -25,7 +31,7 @@ MainWindow.Closed += WindowClosed;
 
 while (MainWindow.IsOpen)
 {
-    MainWindow.Clear(Color.White);
+    MainWindow.Clear(SFML.Graphics.Color.White);
     MainWindow.DispatchEvents();
     DrawTextbox(MainWindow, textboxes,clock);
     MainWindow.Draw(res);
@@ -44,9 +50,13 @@ void MouseMoved(object? sender, MouseMoveEventArgs e)
 {
 
 }
-void KeyPressed(object? sender, KeyEventArgs e)
+void KeyPressed(object? sender, SFML.Window.KeyEventArgs e)
 {
-    if (e.Code!=Keyboard.Key.Enter && e.Code != Keyboard.Key.BackSpace)
+    if(Keyboard.IsKeyPressed(Keyboard.Key.LControl) && Keyboard.IsKeyPressed(Keyboard.Key.V))
+    {
+        active.set_string(Clipboard.Contents);
+    }
+    else if (e.Code!=Keyboard.Key.Enter && e.Code != Keyboard.Key.BackSpace && e.Code!=Keyboard.Key.LControl)
     {
         char ee = WhatCharItIs(e.Code);
         if (ee!='`')
@@ -55,7 +65,8 @@ void KeyPressed(object? sender, KeyEventArgs e)
     }
     else if(e.Code==Keyboard.Key.Enter)
     {
-        res.set_string(SLE.GetMinimumForm(active.get_string()));
+        string sdnf = SDNF.GetSDNF(active.get_string());
+        res.set_string(SLE.GetMinimumForm(sdnf));
     }
     else if(e.Code == Keyboard.Key.BackSpace)
     {
@@ -83,8 +94,8 @@ void DrawTextbox(RenderWindow window,List<Textbox> textboxes,Clock clock)
         Vertex[] vertexes = new Vertex[2];
         vertexes[0] = new Vertex();
         vertexes[1] = new Vertex();
-        vertexes[0].Color = Color.Black;
-        vertexes[1].Color = Color.Black;
+        vertexes[0].Color = SFML.Graphics.Color.Black;
+        vertexes[1].Color = SFML.Graphics.Color.Black;
         vertexes[0].Position=new Vector2f(textboxes.Last().GetText().GetGlobalBounds().Left+textboxes.Last().GetText().GetGlobalBounds().Width + otstypOtText, textboxes.Last().GetText().GetGlobalBounds().Top);
         vertexes[1].Position=new Vector2f(textboxes.Last().GetText().GetGlobalBounds().Left+textboxes.Last().GetText().GetGlobalBounds().Width + otstypOtText, textboxes.Last().GetText().GetGlobalBounds().Top + correctCoord);
         window.Draw(vertexes, PrimitiveType.Lines);
@@ -96,9 +107,9 @@ void InitTextboxes(List<Textbox> textboxes)
 {
     Textbox textbox = new Textbox();
     textbox.set_string("Введите логическое выражение СДНФ");
-    textbox.set_color_text(Color.Black);
-    textbox.set_Fill_color_rect(Color.White);
-    textbox.set_outline_color_rect(Color.Black);
+    textbox.set_color_text(SFML.Graphics.Color.Black);
+    textbox.set_Fill_color_rect(SFML.Graphics.Color.White);
+    textbox.set_outline_color_rect(SFML.Graphics.Color.Black);
     textbox.set_outline_thickness_rect(2);
     textbox.set_size_character_text(16);
     textbox.set_size_rect(800, 100);
@@ -130,5 +141,7 @@ char WhatCharItIs(Keyboard.Key code)
         ch='*';
     if (Keyboard.IsKeyPressed(Keyboard.Key.LShift) && code==Keyboard.Key.Num1)
         ch='!';
+    if (code==Keyboard.Key.Period)
+        ch='>';
     return ch;
 }
