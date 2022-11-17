@@ -100,8 +100,6 @@ namespace MetodKvaina
                 }
                 else
                 {
-                    implicants = disjuncts;
-                    disjuncts = pastDisjuncts;
                     isCover = false;
                 }
                 --CountNames;
@@ -146,8 +144,6 @@ namespace MetodKvaina
         public static Coverage MinForm(in List<string> disjuncts, in List<string> implicants)
         {
             Coverage cover = new Coverage();
-            int countOfCovered = 0;
-            bool isCovered = true;
             int countOfCover = implicants.Count;
 
             Coverage.countOfDisjuncts = disjuncts.Count;
@@ -155,6 +151,13 @@ namespace MetodKvaina
             for(int i=countOfCover;i>1;++i)
             {
                 List<Coverage> coverages = GetCoverage(disjuncts, implicants, i);
+                foreach(Coverage coverage in coverages)
+                {
+                    if(coverage.CountOfCovered()>=cover.CountOfCovered())
+                    {
+                        cover = coverage;
+                    }
+                }
             }
 
             return cover;
