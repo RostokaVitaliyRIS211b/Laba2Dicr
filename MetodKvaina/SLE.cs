@@ -47,6 +47,16 @@ namespace MetodKvaina
             }
             return isCov;
         }
+        public int CountOfCovered()
+        {
+            List<int> ints = new List<int>();
+            foreach(int colum in coveregDisjuncts)
+            {
+                if (!ints.Contains(colum))
+                    ints.Add(colum);
+            }
+            return ints.Count;
+        }
     }
     public class Coveric
     {
@@ -58,45 +68,49 @@ namespace MetodKvaina
             covered = new List<int>();
         }
     }
-
     public static class SLE// !x2 - good x2! - bad x!2 - bad
     {
-        public static string GetMinimumForm(string SDNF)
+        public static string GetMinimumForm(string sdnf)
         {
-
-            List<string> disjuncts = GetDisjuncts(SDNF);
-
-            List<string> implicants = GetSimplifiedForm(disjuncts);
-
-            Coverage.countOfDisjuncts = disjuncts.Count;
-
-            Coverage minCov = new Coverage();
-
-            int countOfCover = implicants.Count;
-
-            bool isCovered = true;
-
-            while(isCovered && countOfCover>1)
-            {
-                --countOfCover;
-                isCovered = false;
-
-                List<Coverage> coverages = GetCoverage(disjuncts, implicants, countOfCover);
-
-                for(int i=0;i<coverages.Count && !isCovered;++i)
-                {
-                    if (coverages[i].isCover())
-                    {
-                        isCovered = true;
-                        minCov = coverages[i];
-                    }
-                }
-                
-            }
+            bool isCover = true;
 
             StringBuilder minform = new StringBuilder("");
 
-            foreach(string imp in minCov.implicants)
+            Coverage? minCov = new Coverage();
+
+            List<string> disjuncts = GetDisjuncts(sdnf);
+
+            List<string> pastDisjuncts = disjuncts;
+
+            List<string> implicants = GetSimplifiedForm(disjuncts);
+
+            int CountNames = SDNF.GetNamesSDNF(sdnf).Count;
+            while (isCover && CountNames>1)
+            {
+                Coverage.countOfDisjuncts = disjuncts.Count;
+
+                isCovering(out minCov, implicants, disjuncts);
+
+                if (minCov is not null)
+                {
+                    pastDisjuncts = disjuncts;
+                    disjuncts = implicants;
+                    implicants = GetSimplifiedForm(disjuncts);
+                    isCover = true;
+                }
+                else
+                {
+                    implicants = disjuncts;
+                    disjuncts = pastDisjuncts;
+                    isCover = false;
+                }
+                --CountNames;
+            }
+
+            if(!isCover)
+                minCov = MinForm(disjuncts, implicants);
+
+            foreach (string imp in minCov?.implicants)
             {
                 minform.Append($" {imp}+");
             }
@@ -104,6 +118,46 @@ namespace MetodKvaina
             minform = minform.Remove(minform.Length-1, 1);
 
             return minform.ToString();
+        }
+        public static void isCovering(out Coverage? cover , in List<string> impliciants,List<string> disjuncts)
+        {
+            bool isCovered = true;
+            cover = null;
+
+            int countOfCover = impliciants.Count;
+
+            while (isCovered && countOfCover>1)
+            {
+                isCovered = false;
+
+                List<Coverage> coverages = GetCoverage(disjuncts, impliciants, countOfCover);
+
+                for (int i = 0; i<coverages.Count && !isCovered; ++i)
+                {
+                    if (coverages[i].isCover())
+                    {
+                        isCovered = true;
+                        cover = coverages[i];
+                    }
+                }
+                --countOfCover;
+            }
+        }
+        public static Coverage MinForm(in List<string> disjuncts, in List<string> implicants)
+        {
+            Coverage cover = new Coverage();
+            int countOfCovered = 0;
+            bool isCovered = true;
+            int countOfCover = implicants.Count;
+
+            Coverage.countOfDisjuncts = disjuncts.Count;
+
+            for(int i=countOfCover;i>1;++i)
+            {
+                List<Coverage> coverages = GetCoverage(disjuncts, implicants, i);
+            }
+
+            return cover;
         }
         public static string GetSDNF(string logicalExpression)
         {

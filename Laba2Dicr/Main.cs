@@ -106,7 +106,7 @@ void DrawTextbox(RenderWindow window,List<Textbox> textboxes,Clock clock)
 void InitTextboxes(List<Textbox> textboxes)
 {
     Textbox textbox = new Textbox();
-    textbox.set_string("Введите логическое выражение СДНФ");
+    textbox.set_string("Введите логическое выражение");
     textbox.set_color_text(SFML.Graphics.Color.Black);
     textbox.set_Fill_color_rect(SFML.Graphics.Color.White);
     textbox.set_outline_color_rect(SFML.Graphics.Color.Black);
