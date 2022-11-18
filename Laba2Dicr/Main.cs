@@ -6,6 +6,8 @@ RenderWindow MainWindow = new(new VideoMode(1280, 720), "Metod Kvaina");
 
 List<Textbox> textboxes = new List<Textbox>();
 
+int insertIndex = 0;
+
 InitTextboxes(textboxes);
 
 Textbox active = textboxes[1];
@@ -31,7 +33,7 @@ MainWindow.Closed += WindowClosed;
 
 while (MainWindow.IsOpen)
 {
-    MainWindow.Clear(SFML.Graphics.Color.White);
+    MainWindow.Clear(Color.White);
     MainWindow.DispatchEvents();
     DrawTextbox(MainWindow, textboxes,clock);
     MainWindow.Draw(res);
@@ -55,12 +57,25 @@ void KeyPressed(object? sender, SFML.Window.KeyEventArgs e)
     if(Keyboard.IsKeyPressed(Keyboard.Key.LControl) && Keyboard.IsKeyPressed(Keyboard.Key.V))
     {
         active.set_string(Clipboard.Contents);
+        return;
     }
-    else if (e.Code!=Keyboard.Key.Enter && e.Code != Keyboard.Key.BackSpace && e.Code!=Keyboard.Key.LControl)
+    else if(e.Code == Keyboard.Key.Left)
+    {
+        if(insertIndex<active.get_string().Length)
+            ++insertIndex;
+        return;
+    }
+    else if(e.Code == Keyboard.Key.Right)
+    {
+        if (insertIndex>0)
+            --insertIndex;
+        return;
+    }
+    else if (e.Code!=Keyboard.Key.Enter && e.Code != Keyboard.Key.Backspace && e.Code!=Keyboard.Key.LControl)
     {
         char ee = WhatCharItIs(e.Code);
         if (ee!='`')
-            active.set_string(active.get_string()+ee);
+            active.set_string(active.get_string().Insert(active.get_string().Length-insertIndex,ee.ToString()));
         return;
     }
     else if(e.Code==Keyboard.Key.Enter)
@@ -68,11 +83,11 @@ void KeyPressed(object? sender, SFML.Window.KeyEventArgs e)
         string sdnf = SDNF.GetSDNF(active.get_string());
         res.set_string(SLE.GetMinimumForm(sdnf));
     }
-    else if(e.Code == Keyboard.Key.BackSpace)
+    else if(e.Code == Keyboard.Key.Backspace)
     {
-        active.set_string(active.get_string().Remove(active.get_string().Length-1,1));
+        if(active.get_string().Length>=1)
+            active.set_string(active.get_string().Remove(active.get_string().Length-insertIndex-1,1));
     }
-
 }
 void MouseWheelScrolled(object? sender, MouseWheelScrollEventArgs e)
 {
@@ -90,14 +105,14 @@ void DrawTextbox(RenderWindow window,List<Textbox> textboxes,Clock clock)
     if (clock.ElapsedTime.AsMilliseconds()>1000 && clock.ElapsedTime.AsMilliseconds()<2000)
     {
         float correctCoord = textboxes.Last().GetText().GetGlobalBounds().Height>0 ? textboxes.Last().GetText().GetGlobalBounds().Height : textboxes.Last().GetText().CharacterSize;
-        const float otstypOtText = 3;
+        const float otstypOtText = 1.2f;
         Vertex[] vertexes = new Vertex[2];
         vertexes[0] = new Vertex();
         vertexes[1] = new Vertex();
         vertexes[0].Color = SFML.Graphics.Color.Black;
         vertexes[1].Color = SFML.Graphics.Color.Black;
-        vertexes[0].Position=new Vector2f(textboxes.Last().GetText().GetGlobalBounds().Left+textboxes.Last().GetText().GetGlobalBounds().Width + otstypOtText, textboxes.Last().GetText().GetGlobalBounds().Top);
-        vertexes[1].Position=new Vector2f(textboxes.Last().GetText().GetGlobalBounds().Left+textboxes.Last().GetText().GetGlobalBounds().Width + otstypOtText, textboxes.Last().GetText().GetGlobalBounds().Top + correctCoord);
+        vertexes[0].Position=new Vector2f(textboxes.Last().GetText().GetGlobalBounds().Left+textboxes.Last().GetText().GetGlobalBounds().Width + otstypOtText - insertIndex*textboxes.Last().GetText().CharacterSize/1.875f, textboxes.Last().GetText().GetGlobalBounds().Top-1);
+        vertexes[1].Position=new Vector2f(textboxes.Last().GetText().GetGlobalBounds().Left+textboxes.Last().GetText().GetGlobalBounds().Width + otstypOtText - insertIndex*textboxes.Last().GetText().CharacterSize/1.875f, textboxes.Last().GetText().GetGlobalBounds().Top + correctCoord+1);
         window.Draw(vertexes, PrimitiveType.Lines);
     }
     else if(clock.ElapsedTime.AsMilliseconds()>2000)
@@ -111,7 +126,7 @@ void InitTextboxes(List<Textbox> textboxes)
     textbox.set_Fill_color_rect(SFML.Graphics.Color.White);
     textbox.set_outline_color_rect(SFML.Graphics.Color.Black);
     textbox.set_outline_thickness_rect(2);
-    textbox.set_size_character_text(16);
+    textbox.set_size_character_text(20);
     textbox.set_size_rect(800, 100);
     textbox.set_pos(640, 260);
     textboxes.Add(textbox);
@@ -141,6 +156,10 @@ char WhatCharItIs(Keyboard.Key code)
         ch='*';
     if (Keyboard.IsKeyPressed(Keyboard.Key.LShift) && code==Keyboard.Key.Num1)
         ch='!';
+    if (Keyboard.IsKeyPressed(Keyboard.Key.LShift) && code==Keyboard.Key.Num9)
+        ch='(';
+    if (Keyboard.IsKeyPressed(Keyboard.Key.LShift) && code==Keyboard.Key.Num0)
+        ch=')';
     if (code==Keyboard.Key.Period)
         ch='>';
     return ch;

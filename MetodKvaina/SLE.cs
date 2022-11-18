@@ -87,11 +87,12 @@ namespace MetodKvaina
             int CountNames = SDNF.GetNamesSDNF(sdnf).Count;
             while (isCover && CountNames>1)
             {
+                --CountNames;
                 Coverage.countOfDisjuncts = disjuncts.Count;
 
                 isCovering(out minCov, implicants, disjuncts);
 
-                if (minCov is not null)
+                if (minCov is not null && CountNames>1)
                 {
                     pastDisjuncts = disjuncts;
                     disjuncts = implicants;
@@ -102,7 +103,7 @@ namespace MetodKvaina
                 {
                     isCover = false;
                 }
-                --CountNames;
+                
             }
 
             if(!isCover)
@@ -112,9 +113,13 @@ namespace MetodKvaina
             {
                 minform.Append($" {imp}+");
             }
-
+            for(int i=0;i<disjuncts.Count;++i)
+            {
+                if((bool)!minCov?.coveregDisjuncts.Contains(i))
+                    minform.Append($" {disjuncts[i]}+");
+            }
             minform = minform.Remove(minform.Length-1, 1);
-
+            //( ( x!*y ) !* z ) -> x
             return minform.ToString();
         }
         public static void isCovering(out Coverage? cover , in List<string> impliciants,List<string> disjuncts)
@@ -148,7 +153,7 @@ namespace MetodKvaina
 
             Coverage.countOfDisjuncts = disjuncts.Count;
 
-            for(int i=countOfCover;i>1;++i)
+            for(int i=countOfCover;i>1;--i)
             {
                 List<Coverage> coverages = GetCoverage(disjuncts, implicants, i);
                 foreach(Coverage coverage in coverages)
@@ -330,6 +335,26 @@ namespace MetodKvaina
             }
             return Fullexp.ToString();
         }
+        public static string GetSh2RegularExp(List<string> names)
+        {
+            StringBuilder Fullexp = new StringBuilder();
+            StringBuilder exp = new StringBuilder("^");
+            StringBuilder partOfExpression = new StringBuilder($"({names[0]}");
+
+            for (int i = 1; i<names.Count; ++i)
+            {
+                partOfExpression.Append($"|{names[i]}");
+            }
+
+            partOfExpression.Append(')');
+            exp.Append(partOfExpression);
+
+            for (int i = 0; i<names.Count; ++i)
+            {
+                Fullexp.Append(exp);
+            }
+            return Fullexp.ToString();
+        }
         public static List<List<T>> UniqueSoches<T>(List<List<T>> soches)
         {
             List<List<T>> uniqueSoches = new List<List<T>>();
@@ -423,7 +448,7 @@ namespace MetodKvaina
         public static List<Coverage> GetCoverage(in List<string> disjuncts, in List<string> implis,int countOfCover)
         {
             List<Coverage> coverages = new List<Coverage>();
-
+            //( ( x!*y ) !* z ) -> x
             List<Coveric> coverics = new List<Coveric>();
 
             foreach(var impl in implis)
@@ -432,20 +457,30 @@ namespace MetodKvaina
 
                 coveric.implicant = impl;
 
-                for(int i=0;i<disjuncts.Count;++i)
+                string RegExp = GetSh1RegularExp(GetNamesFromExpression(impl));
+                string RegExp2 = GetSh2RegularExp(GetNamesFromExpression(impl));
+                for (int i=0;i<disjuncts.Count;++i)
                 {
-                    string RegExp = GetSh1RegularExp(GetNamesFromExpression(impl));
-                    if (Regex.IsMatch(disjuncts[i],RegExp))
+                    if (Regex.IsMatch(disjuncts[i],RegExp) || Regex.IsMatch(disjuncts[i],RegExp2))
                     {
                         coveric.covered.Add(i);
                     }
                 }
                 coverics.Add(coveric);
             }
+            
+            List<List<Coveric>> sochCov = new List<List<Coveric>>();
 
-            List<List<Coveric>> sochCov = GetAllSoch(coverics);
+            if(countOfCover==implis.Count)
+            {
+                sochCov.Add(coverics);
+            }
+            else
+            {
+                sochCov = GetAllSoch(coverics);
+            }
 
-            for(int i=1;i<implis.Count - countOfCover;++i)
+            for(int i=1;i<implis.Count-countOfCover;++i)
             {
                 List<List<Coveric>> newSochCov = new List<List<Coveric>>();
 
