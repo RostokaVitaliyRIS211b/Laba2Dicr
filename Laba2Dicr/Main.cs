@@ -139,6 +139,7 @@ char WhatCharItIs(Keyboard.Key code)
 {
     char ch = '0';
     string gay = "abcdefghijklmnopqrstuvwxyz0123456789";
+    //( x * y -> y*z ) -> z*x 
 
     if (code<=Keyboard.Key.Num9)
     {
@@ -162,5 +163,7 @@ char WhatCharItIs(Keyboard.Key code)
         ch=')';
     if (code==Keyboard.Key.Period)
         ch='>';
+    if (code == Keyboard.Key.Equal && !Keyboard.IsKeyPressed(Keyboard.Key.LShift))
+        ch = '=';
     return ch;
 }
