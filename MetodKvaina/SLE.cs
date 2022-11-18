@@ -160,7 +160,7 @@ namespace MetodKvaina
 
             Coverage.countOfDisjuncts = disjuncts.Count;
 
-            for(int i=countOfCover;i>1;--i)
+            for(int i=countOfCover;i>0;--i)
             {
                 List<Coverage> coverages = GetCoverage(disjuncts, implicants, i);
                 foreach(Coverage coverage in coverages)
@@ -177,6 +177,8 @@ namespace MetodKvaina
         public static List<string> GetDisjuncts(string Expression)
         {
             List<string> disjuncts = Expression.Split('+').ToList();
+            for(int i=0;i<disjuncts.Count;++i)
+                disjuncts[i] = disjuncts[i].Insert(0, " ");
             return disjuncts;
         }
         public static List<string> GetSimplifiedForm(List<string> disjuncts)
@@ -191,7 +193,7 @@ namespace MetodKvaina
             List<string> names = new List<string>();
             StringBuilder name = new StringBuilder();
             expression += ' ';
-            for(int i=0;i<expression.Length;++i)
+            for (int i=0;i<expression.Length;++i)
             {
                 name.Append(expression[i]);
                 if(Regex.IsMatch(name.ToString(), @"[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Lm}!]"))
@@ -199,7 +201,7 @@ namespace MetodKvaina
                     if (name.Length>1)
                     {
                         name.Remove(name.Length-1, 1);
-                        if (!Regex.IsMatch(name.ToString(), @"^\d+$") && !names.Contains(name.ToString()))
+                        if (!Regex.IsMatch(name.ToString(), @"^\d+$"))
                             names.Add(name.ToString());
                     }
                     name.Clear();
@@ -341,7 +343,7 @@ namespace MetodKvaina
         {
             StringBuilder Fullexp = new StringBuilder();
             StringBuilder exp = new StringBuilder("");
-            StringBuilder partOfExpression = new StringBuilder($"[^!]+({names[0]}");
+            StringBuilder partOfExpression = new StringBuilder($"({names[0]}");
 
             for (int i = 1; i<names.Count; ++i)
             {
@@ -462,10 +464,10 @@ namespace MetodKvaina
 
                 string RegExp = GetSh1RegularExp(GetNamesFromExpression(impl));
                 string RegExp2 = GetSh2RegularExp(GetNamesFromExpression(impl));
+
                 for (int i=0;i<disjuncts.Count;++i)
                 {
-                    disjuncts[i] = disjuncts[i].Insert(0, " ");
-                    if (Regex.IsMatch(disjuncts[i],RegExp) )
+                    if (Regex.IsMatch(disjuncts[i],RegExp) || Regex.IsMatch(disjuncts[i],RegExp2))
                     {
                         coveric.covered.Add(i);
                     }

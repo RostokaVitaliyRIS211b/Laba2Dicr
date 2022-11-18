@@ -52,7 +52,7 @@ void MouseMoved(object? sender, MouseMoveEventArgs e)
 {
 
 }
-void KeyPressed(object? sender, SFML.Window.KeyEventArgs e)
+void KeyPressed(object? sender, KeyEventArgs e)
 {
     if(Keyboard.IsKeyPressed(Keyboard.Key.LControl) && Keyboard.IsKeyPressed(Keyboard.Key.V))
     {
