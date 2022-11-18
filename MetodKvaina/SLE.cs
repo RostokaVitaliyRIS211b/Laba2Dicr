@@ -106,6 +106,12 @@ namespace MetodKvaina
                 
             }
 
+            if (implicants.Count == 0) 
+            {
+                implicants = disjuncts;
+                disjuncts = pastDisjuncts;
+            }
+
             if(!isCover)
                 minCov = MinForm(disjuncts, implicants);
 
@@ -113,13 +119,14 @@ namespace MetodKvaina
             {
                 minform.Append($" {imp}+");
             }
-            for(int i=0;i<disjuncts.Count;++i)
+            for (int i=0;i<disjuncts.Count;++i)
             {
                 if((bool)!minCov?.coveregDisjuncts.Contains(i))
                     minform.Append($" {disjuncts[i]}+");
             }
             minform = minform.Remove(minform.Length-1, 1);
             //( ( x!*y ) !* z ) -> x
+            //( x!=y ) + x * !z
             return minform.ToString();
         }
         public static void isCovering(out Coverage? cover , in List<string> impliciants,List<string> disjuncts)
@@ -166,11 +173,6 @@ namespace MetodKvaina
             }
 
             return cover;
-        }
-        public static string GetSDNF(string logicalExpression)
-        {
-            string SDNF = logicalExpression;
-            return SDNF;
         }
         public static List<string> GetDisjuncts(string Expression)
         {
@@ -318,12 +320,12 @@ namespace MetodKvaina
         public static string GetSh1RegularExp(List<string> names)
         {
             StringBuilder Fullexp = new StringBuilder();
-            StringBuilder exp = new StringBuilder(".*[^!]");
-            StringBuilder partOfExpression = new StringBuilder($"({names[0]}");
+            StringBuilder exp = new StringBuilder(".*");
+            StringBuilder partOfExpression = new StringBuilder($"([^!]{names[0]}");
 
             for(int i=1;i<names.Count;++i)
             {
-                partOfExpression.Append($"|{names[i]}");
+                partOfExpression.Append($"|[^!]{names[i]}");
             }
 
             partOfExpression.Append(')');
@@ -338,21 +340,22 @@ namespace MetodKvaina
         public static string GetSh2RegularExp(List<string> names)
         {
             StringBuilder Fullexp = new StringBuilder();
-            StringBuilder exp = new StringBuilder("^");
-            StringBuilder partOfExpression = new StringBuilder($"({names[0]}");
+            StringBuilder exp = new StringBuilder("");
+            StringBuilder partOfExpression = new StringBuilder($"[^!]+({names[0]}");
 
             for (int i = 1; i<names.Count; ++i)
             {
                 partOfExpression.Append($"|{names[i]}");
             }
 
-            partOfExpression.Append(')');
+            partOfExpression.Append(").*");
             exp.Append(partOfExpression);
 
             for (int i = 0; i<names.Count; ++i)
             {
                 Fullexp.Append(exp);
             }
+            Fullexp.Insert(0, "^");
             return Fullexp.ToString();
         }
         public static List<List<T>> UniqueSoches<T>(List<List<T>> soches)
@@ -448,7 +451,7 @@ namespace MetodKvaina
         public static List<Coverage> GetCoverage(in List<string> disjuncts, in List<string> implis,int countOfCover)
         {
             List<Coverage> coverages = new List<Coverage>();
-            //( ( x!*y ) !* z ) -> x
+            //( ( x!*y ) !* z ) -> x ( x !+ y ) + ( x == z )
             List<Coveric> coverics = new List<Coveric>();
 
             foreach(var impl in implis)
@@ -461,7 +464,8 @@ namespace MetodKvaina
                 string RegExp2 = GetSh2RegularExp(GetNamesFromExpression(impl));
                 for (int i=0;i<disjuncts.Count;++i)
                 {
-                    if (Regex.IsMatch(disjuncts[i],RegExp) || Regex.IsMatch(disjuncts[i],RegExp2))
+                    disjuncts[i] = disjuncts[i].Insert(0, " ");
+                    if (Regex.IsMatch(disjuncts[i],RegExp) )
                     {
                         coveric.covered.Add(i);
                     }
