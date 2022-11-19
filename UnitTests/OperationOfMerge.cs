@@ -11,8 +11,8 @@ namespace UnitTests
             List<string> disjuncts = SLE.GetDisjuncts(expression);
             List<string> disjunctsExp = new List<string>();
 
-            disjunctsExp.Add(" x1 * x2  ");
-            disjunctsExp.Add(" !x2 * x3  ");
+            disjunctsExp.Add("  x1 * x2  ");
+            disjunctsExp.Add("  !x2 * x3  ");
 
             List<List<string>> soches = new List<List<string>>();
             soches.Add(new List<string>(new string[] { "x1", "x2" }));
@@ -34,8 +34,8 @@ namespace UnitTests
             List<string> disjuncts = SLE.GetDisjuncts(expression);
             List<string> disjunctsExp = new List<string>();
 
-            disjunctsExp.Add(" x1 * x2 * x4  ");
-            disjunctsExp.Add(" !x2 * x3 * x4  ");
+            disjunctsExp.Add("  x1 * x2 * x4  ");
+            disjunctsExp.Add("  !x2 * x3 * x4  ");
 
             List<List<string>> soches = new List<List<string>>();
             soches.Add(new List<string>(new string[] { "x1", "x2","x4" }));

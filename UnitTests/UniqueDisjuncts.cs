@@ -11,10 +11,10 @@ namespace UnitTests
             List<string> disjuncts = SLE.GetDisjuncts(expression);
             List<string> disjunctsExp = new List<string>();
 
-            disjunctsExp.Add(" x1 * x2  ");
-            disjunctsExp.Add(" !x2 * x3  ");
-            disjunctsExp.Add(" x1 * !x2 * x3 ");
-            disjunctsExp.Add(" x1 * x2 * !x3 ");
+            disjunctsExp.Add("  x1 * x2  ");
+            disjunctsExp.Add("  !x2 * x3  ");
+            disjunctsExp.Add("  x1 * !x2 * x3 ");
+            disjunctsExp.Add("  x1 * x2 * !x3 ");
 
             disjuncts = SLE.UniqueDisjuncts(disjuncts);
 
@@ -32,10 +32,10 @@ namespace UnitTests
             List<string> disjunctsExp = new List<string>();
 
             
-            disjunctsExp.Add(" x1 * !x2 * x3 ");
-            disjunctsExp.Add(" x1 * x2 * !x3 ");
-            disjunctsExp.Add(" x1 * x2  ");
-            disjunctsExp.Add(" !x2 * x3");
+            disjunctsExp.Add("  x1 * !x2 * x3 ");
+            disjunctsExp.Add("  x1 * x2 * !x3 ");
+            disjunctsExp.Add("  x1 * x2  ");
+            disjunctsExp.Add("  !x2 * x3");
 
             disjuncts = SLE.UniqueDisjuncts(disjuncts);
 
